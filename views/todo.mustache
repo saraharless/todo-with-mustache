@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>things to do</title>
+  </head>
+  <body>
+
+    <form class="entertask" action="/" method="post">
+    <input type="text" name="taskinput" value="" placeholder="take out the papers and the trash">
+    <button type="submit" name="add">add to list</button>
+  </form>
+
+  {{#todos}}
+    {{^done}}
+  <form class="markcomplete" action="/{{id}}" method="post">
+    <p>
+    <button type="submit" name="button">mark as complete</button>
+    {{name}}</p>
+  </form>
+  {{/done}}
+  {{/todos}}
+  <ul class="completed">
+    <h3>Completed Tasks</h3>
+    {{#todos}}
+      {{#done}}
+      <li>{{name}}</li>
+      {{/done}}
+    {{/todos}}
+  </ul>
+  </body>
+</html>
