@@ -28,17 +28,17 @@ app.get('/', function (req, res) {
 })
 
 
-// let generate new id for each new item created
-app.post('/', function(req, res){
-  console.log('hit post root');
-  let todo = {name: req.body.newtodo, dont: false}
-  let collection = database.collection('todos')
-  // save the todo to the collection
-  // after saving get the list
-  collection.find({}).toArray(function(err, todos) {
-    res.render('todo',{todo});
-  })
-})
+// // let generate new id for each new item created
+// app.post('/', function(req, res){
+//   console.log('hit post root');
+//   let todo = {name: req.body.newtodo, dont: false}
+//   let collection = database.collection('todos')
+//   // save the todo to the collection
+//   // after saving get the list
+//   collection.find({}).toArray(function(err, todos) {
+//     res.render('todo',{todo});
+//   })
+// })
 
 
 
@@ -58,24 +58,29 @@ app.post('/:id', function(req, res){
 
 app.post('/', function (req,res){
   const updatetask = req.body.taskinput;
-  let max = 0;
-  for (var i = 0; i < todos.length; i++) {
-    if(max < todos[i].id){
-      max = todos[i].id;
+  let collection = database.collection('todos')
+  collection.find({}).toArray(function(err,todos){
+    let task = {
+      name: updatetask,
+      done: false,
+      id: todos.length +1
     }
-  }
-  let task = {
-    name: updatetask,
-    done: false,
-    id: max + 1
-  }
-  todos.push(task);
+    collection.insertOne(task), function(err, result){
+      console.log('updated with new todo');
+      res.render('todo', {task});
+    }
+
+  })
   res.redirect('/')
 })
 
 
 // code here
 
+// show on local host
+app.listen(3000, function () {
+  console.log('Successfully started express application!');
+})
 
 let database;
 
@@ -94,8 +99,3 @@ process.on('SIGINT', function() {
     process.exit(0);
   });
 });
-
-// show on local host
-app.listen(3000, function () {
-  console.log('Successfully started express application!');
-})
