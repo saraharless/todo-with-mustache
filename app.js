@@ -17,8 +17,12 @@ app.set('view engine', 'mustache')
 
 //Listening on root
 app.get('/', function (req, res) {
-  var collection = database.collection('todos');
+  console.log('hit get root');
+  let collection = database.collection('todos');
   collection.find({}).toArray(function(err, todos) {
+    if (err){
+      console.log(err);
+    }
     res.render('todo',{todos});
   });
 })
@@ -26,46 +30,47 @@ app.get('/', function (req, res) {
 
 // let generate new id for each new item created
 app.post('/', function(req, res){
+  console.log('hit post root');
   let todo = {name: req.body.newtodo, dont: false}
   let collection = database.collection('todos')
   // save the todo to the collection
   // after saving get the list
   collection.find({}).toArray(function(err, todos) {
-    res.render('todo',{});
+    res.render('todo',{todo});
   })
 })
 
 
-// app.post('/', function (req,res){
-//   const updatetask = req.body.taskinput;
-//   let max = 0;
-//   for (var i = 0; i < list.length; i++) {
-//     if(max < list[i].id){
-//       max = list[i].id;
-//     }
-//   }
-//   let task = {
-//     name: updatetask,
-//     done: false,
-//     id: max + 1
-//   }
-//   list.push(task);
-//   res.redirect('/')
-// })
-// // move to completed when click mark as complete
-// app.post('/:id', function(req, res){
-//   let id = parseInt(req.params.id);
-//
-//   list.forEach ( function (e){
-//     if(id === e.id){
-//       e.done = true;
-//     }
-//   })
-//   res.render('todo', {todos: list});
-// })
-// show on local host
-app.listen(3000, function () {
-  console.log('Successfully started express application!');
+
+// move to completed when click mark as complete
+app.post('/:id', function(req, res){
+  let id = parseInt(req.params.id);
+
+  todo.forEach ( function (e){
+    if(id === e.id){
+      e.done = true;
+    }
+    res.render('todo', {todos:todos});
+
+  })
+})
+
+
+app.post('/', function (req,res){
+  const updatetask = req.body.taskinput;
+  let max = 0;
+  for (var i = 0; i < todos.length; i++) {
+    if(max < todos[i].id){
+      max = todos[i].id;
+    }
+  }
+  let task = {
+    name: updatetask,
+    done: false,
+    id: max + 1
+  }
+  todos.push(task);
+  res.redirect('/')
 })
 
 
@@ -89,3 +94,8 @@ process.on('SIGINT', function() {
     process.exit(0);
   });
 });
+
+// show on local host
+app.listen(3000, function () {
+  console.log('Successfully started express application!');
+})
